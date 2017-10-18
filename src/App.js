@@ -42,14 +42,16 @@ class App extends Component {
             <Navbar.Brand>
               Weather App
             </Navbar.Brand>
-            <Navbar.Toggle />
+
           </Navbar.Header>
-          <Navbar.Form pullRight>
-            <FormGroup>
-              <FormControl type="text" placeholder="Lancaster, PA" />
-            </FormGroup>
-            {' '}
-            <Button type="submit" onClick={this.props.submitNewCity}>Get Weather</Button>
+          <Navbar.Form pullRight onSubmit={this.submitNewCity}>
+            <form>
+              <FormGroup>
+                <FormControl type="text" placeholder="Lancaster, PA" onChange={this.onChange}/>
+              </FormGroup>
+              {' '}
+              <Button type="submit">Get Weather</Button>
+            </form>
           </Navbar.Form>
         </Navbar>
 
