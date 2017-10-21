@@ -9,6 +9,7 @@ import { createBrowserHistory } from 'history'
 const history = createBrowserHistory()
 
 var axios = require('axios');
+var Loading = require('./Loading');
 
 class WeatherNav extends Component {
   render () {
@@ -68,7 +69,8 @@ class WeatherNav extends Component {
         super(props)
         this.state = {
           city: "",
-          weather: []
+          weather: [],
+          loading: true
         }
         this.onChange = this.onChange.bind(this);
         this.submitNewCity = this.submitNewCity.bind(this);
@@ -80,12 +82,13 @@ class WeatherNav extends Component {
       }
 
       submitNewCity (e) {
+        this.setState({loading: true});
         let submissionPath = '/forecast/' + this.state.city;
         history.push(submissionPath)
 
         axios.get("http://api.openweathermap.org/data/2.5/weather?q=" + this.state.city +
-        "&type=accurate&APPID=KEY").then(res => {
-          this.setState({weather: res.data});
+        "&type=accurate&APPID=3344ee87c2f2d8715db39fafdbac5339").then(res => {
+          this.setState({weather: res.data, loading: false});
           console.log(this.state.weather)
         });
         e.preventDefault();
@@ -123,7 +126,10 @@ class WeatherNav extends Component {
                 city={this.state.city}
                 //  {...props}
               />
-              <h1>ID: {props.match.params.city}</h1>
+
+              {this.state.loading
+          ? <Loading />
+          : <h1>ID: {props.match.params.city}</h1>}
             </div>
 
           );
