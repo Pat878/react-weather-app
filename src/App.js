@@ -3,11 +3,10 @@ import logo from './logo.svg';
 import './App.css';
 import { Navbar, FormGroup, FormControl, Button, Form, Col }
 from 'react-bootstrap';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link, Switch
-} from 'react-router-dom'
+import { Router, Route, Link, Switch } from 'react-router-dom'
+import { createBrowserHistory } from 'history'
+
+const history = createBrowserHistory()
 
 var axios = require('axios');
 
@@ -18,8 +17,7 @@ class WeatherNav extends Component {
         <Navbar inverse>
           <Navbar.Header>
             <Navbar.Brand>
-              <Link to="/">Weather</Link>
-              <Link to="/forecast">forecast</Link>
+              <Link to="/">Weather App</Link>
             </Navbar.Brand>
           </Navbar.Header>
 
@@ -82,6 +80,8 @@ class WeatherNav extends Component {
       }
 
       submitNewCity (e) {
+        let submissionPath = '/forecast/' + this.state.city;
+        history.push(submissionPath)
 
         axios.get("http://api.openweathermap.org/data/2.5/weather?q=" + this.state.city +
         "&type=accurate&APPID=KEY").then(res => {
@@ -100,13 +100,15 @@ class WeatherNav extends Component {
               <WeatherNav
                 submitNewCity={this.submitNewCity.bind(this)}
                 onChange={this.onChange.bind(this)}
-                {...props}
+                city={this.state.city}
+                //  {...props}
               />
 
               <Input
                 submitNewCity={this.submitNewCity.bind(this)}
                 onChange={this.onChange.bind(this)}
-                {...props}
+                city={this.state.city}
+                //{...props}
               />
             </div>
           );
@@ -118,9 +120,10 @@ class WeatherNav extends Component {
               <WeatherNav
                 submitNewCity={this.submitNewCity.bind(this)}
                 onChange={this.onChange.bind(this)}
-                {...props}
+                city={this.state.city}
+                //  {...props}
               />
-              <h1>test</h1>
+              <h1>ID: {props.match.params.city}</h1>
             </div>
 
           );
@@ -129,12 +132,12 @@ class WeatherNav extends Component {
         return (
 
           <div>
-            <Router>
+            <Router history={history}>
               <div>
 
                 <Switch>
                   <Route exact path='/' render={Home} />
-                  <Route exact path='/forecast' render={Forecast} />
+                  <Route path='/forecast/:city' render={Forecast} />
                   <Route render={function () {
                     return <p>Not Found</p>
                   }} />
