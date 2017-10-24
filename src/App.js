@@ -73,7 +73,9 @@ class WeatherNav extends Component {
 
         const mappedWeatherObject = Object.keys(weatherObject).map((key,index) => {
           let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
           dates.push(new Date(weatherObject[index].dt * 1000).toLocaleDateString('en-US', options) )
+
           return (
             <li key={key}>{dates[key]}</li>
           )
@@ -106,7 +108,7 @@ class WeatherNav extends Component {
         this.onChange = this.onChange.bind(this);
         this.submitNewCity = this.submitNewCity.bind(this);
       }
-
+      
       onChange (e) {
         this.setState({ city: e.target.value});
 
@@ -165,7 +167,6 @@ class WeatherNav extends Component {
                   weather={this.state.weather}
                   city={this.state.city}
                   loading={this.state.loading}
-                  ajaxCall={this.ajaxCall}
                 />}
               </div>
 
