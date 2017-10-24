@@ -63,6 +63,37 @@ class WeatherNav extends Component {
       }
     }
 
+    class FiveDayForecast extends Component {
+
+
+      render () {
+
+        const weatherObject = this.props.weather.list
+        const dates = []
+
+        const mappedWeatherObject = Object.keys(weatherObject).map((key,index) => {
+          let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+          dates.push(new Date(weatherObject[index].dt * 1000).toLocaleDateString('en-US', options) )
+          return (
+            <li key={key}>{dates[key]}</li>
+          )
+        })
+
+        return (
+          <div>
+            <h1>ID: {this.props.city}</h1>
+            <div>
+              <center>
+
+                <ul>{mappedWeatherObject}</ul>
+              </center>
+            </div>
+
+          </div>
+        )
+      }
+    }
+
 
     class App extends Component {
       constructor(props) {
@@ -81,16 +112,21 @@ class WeatherNav extends Component {
 
       }
 
+      ajaxCall () {
+        axios.get("http://api.openweathermap.org/data/2.5/forecast/daily?q=" + this.state.city +
+        "&type=accurate&APPID=f1455e6d29208b068f597ec226e62ffa&cnt=5").then(res => {
+          this.setState({weather: res.data, loading:false});
+
+        });
+
+      }
+
       submitNewCity (e) {
+        this.ajaxCall()
         this.setState({loading: true});
         let submissionPath = '/forecast/' + this.state.city;
         history.push(submissionPath)
 
-        axios.get("http://api.openweathermap.org/data/2.5/weather?q=" + this.state.city +
-        "&type=accurate&APPID=3344ee87c2f2d8715db39fafdbac5339").then(res => {
-          this.setState({weather: res.data, loading: false});
-          console.log(this.state.weather)
-        });
         e.preventDefault();
       }
 
@@ -104,14 +140,12 @@ class WeatherNav extends Component {
                 submitNewCity={this.submitNewCity.bind(this)}
                 onChange={this.onChange.bind(this)}
                 city={this.state.city}
-                //  {...props}
               />
 
               <Input
                 submitNewCity={this.submitNewCity.bind(this)}
                 onChange={this.onChange.bind(this)}
                 city={this.state.city}
-                //{...props}
               />
             </div>
           );
@@ -124,38 +158,41 @@ class WeatherNav extends Component {
                 submitNewCity={this.submitNewCity.bind(this)}
                 onChange={this.onChange.bind(this)}
                 city={this.state.city}
-                //  {...props}
               />
-
               {this.state.loading
-          ? <Loading />
-          : <h1>ID: {props.match.params.city}</h1>}
+                ? <Loading />
+                : <FiveDayForecast
+                  weather={this.state.weather}
+                  city={this.state.city}
+                  loading={this.state.loading}
+                  ajaxCall={this.ajaxCall}
+                />}
+              </div>
+
+            );
+          }
+
+          return (
+
+            <div>
+              <Router history={history}>
+                <div>
+
+                  <Switch>
+                    <Route exact path='/' render={Home} />
+                    <Route path='/forecast/:city' render={Forecast} />
+                    <Route render={function () {
+                      return <p>Not Found</p>
+                    }} />
+                  </Switch>
+                </div>
+              </Router>
+
             </div>
 
-          );
+
+          )
         }
-
-        return (
-
-          <div>
-            <Router history={history}>
-              <div>
-
-                <Switch>
-                  <Route exact path='/' render={Home} />
-                  <Route path='/forecast/:city' render={Forecast} />
-                  <Route render={function () {
-                    return <p>Not Found</p>
-                  }} />
-                </Switch>
-              </div>
-            </Router>
-
-          </div>
-
-
-        )
       }
-    }
 
-    export default App;
+      export default App;
