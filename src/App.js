@@ -65,30 +65,35 @@ class WeatherNav extends Component {
 
     class FiveDayForecast extends Component {
 
-
+//              <div key={weatherObject[index].dt}>{dates[key]}</div>
       render () {
 
         const weatherObject = this.props.weather.list
         const dates = []
+        const imageIcon = []
 
         const mappedWeatherObject = Object.keys(weatherObject).map((key,index) => {
-          let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+          let options = { weekday: 'long', month: 'long', day: 'numeric' };
 
           dates.push(new Date(weatherObject[index].dt * 1000).toLocaleDateString('en-US', options) )
+          imageIcon.push(weatherObject[index].weather)
 
           return (
-            <li key={key}>{dates[key]}</li>
+            <div key={index}>
+              <div><img key={key * 2} alt="weather_icon" src={"http://openweathermap.org/img/w/" +
+              imageIcon[key][0].icon + ".png"}/></div>
+              <div>{dates[key]}</div>
+            </div>
           )
         })
 
         return (
           <div>
-            <h1>ID: {this.props.city}</h1>
+            <h1>{this.props.weather.city.name}</h1>
             <div>
-              <center>
 
-                <ul>{mappedWeatherObject}</ul>
-              </center>
+
+              {mappedWeatherObject}
             </div>
 
           </div>
@@ -108,7 +113,7 @@ class WeatherNav extends Component {
         this.onChange = this.onChange.bind(this);
         this.submitNewCity = this.submitNewCity.bind(this);
       }
-      
+
       onChange (e) {
         this.setState({ city: e.target.value});
 
@@ -135,7 +140,7 @@ class WeatherNav extends Component {
 
       render() {
 
-        const Home = (props) => {
+      const Home = (props) => {
           return (
             <div>
               <WeatherNav
