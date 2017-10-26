@@ -65,7 +65,6 @@ class WeatherNav extends Component {
 
     class FiveDayForecast extends Component {
 
-//              <div key={weatherObject[index].dt}>{dates[key]}</div>
       render () {
 
         const weatherObject = this.props.weather.list
@@ -79,23 +78,54 @@ class WeatherNav extends Component {
           imageIcon.push(weatherObject[index].weather)
 
           return (
-            <div key={index}>
+            <div key={index} onClick={this.props.viewDayDetail.bind(this,index)}>
               <div><img key={key * 2} alt="weather_icon" src={"http://openweathermap.org/img/w/" +
               imageIcon[key][0].icon + ".png"}/></div>
-              <div>{dates[key]}</div>
+              <div><h3>{dates[key]}</h3></div>
             </div>
           )
         })
 
         return (
           <div>
-            <h1>{this.props.weather.city.name}</h1>
-            <div>
+            <center>
+              <h1>{this.props.weather.city.name}</h1>
+              <div>
+                {this.props.detail ? <DayDetail/> : mappedWeatherObject }
+              </div>
+            </center>
 
+          </div>
+        )
+      }
+    }
 
-              {mappedWeatherObject}
-            </div>
+    class DayDetail extends Component {
 
+      render (){
+        let options = { weekday: 'long', month: 'long', day: 'numeric' };
+        let index = this.props.detailIndex;
+        let date = new Date(this.props.weather.list[index].dt * 1000).toLocaleDateString('en-US', options)
+        let icon = this.props.weather.list[index].weather[0].icon
+        let city = this.props.weather.city.name
+        let description = this.props.weather.list[index].weather[0].description
+        let minTemp = Math.round(this.props.weather.list[index].temp.min * 9/5 - 459.67)
+        let maxTemp = Math.round(this.props.weather.list[index].temp.max * 9/5 - 459.67)
+        let humidity = this.props.weather.list[index].humidity
+
+        return (
+          <div>
+            <center>
+              <div>{<img alt="weather_icon" src={"http://openweathermap.org/img/w/" +
+              icon + ".png"}/>}</div>
+              <h2>{date}</h2>
+              <h2>{city}</h2>
+              <h3>{description}</h3>
+              <h3>Min Temp: {minTemp} degrees</h3>
+              <h3>Max Temp: {Math.round(maxTemp)} degrees</h3>
+              <h3>Humidity: {humidity}</h3>
+              <Button onClick={this.props.goBack}>Back</Button>
+            </center>
           </div>
         )
       }
@@ -108,10 +138,13 @@ class WeatherNav extends Component {
         this.state = {
           city: "",
           weather: [],
-          loading: true
+          loading: true,
+          detail: false,
+          detailIndex: null
         }
         this.onChange = this.onChange.bind(this);
         this.submitNewCity = this.submitNewCity.bind(this);
+        this.goBack = this.goBack.bind(this);
       }
 
       onChange (e) {
@@ -120,12 +153,13 @@ class WeatherNav extends Component {
       }
 
       ajaxCall () {
-        axios.get("http://api.openweathermap.org/data/2.5/forecast/daily?q=" + this.state.city +
+        axios.get("http://api.openweathermap.org/data/2.5/forecast/daily?q=" +
+        this.state.city +
         "&type=accurate&APPID=f1455e6d29208b068f597ec226e62ffa&cnt=5").then(res => {
           this.setState({weather: res.data, loading:false});
 
         });
-
+        console.log("call")
       }
 
       submitNewCity (e) {
@@ -137,10 +171,21 @@ class WeatherNav extends Component {
         e.preventDefault();
       }
 
+      viewDayDetail(index, e) {
+        this.setState({detailIndex: index})
+        let detailPath = '/detail/' + this.state.city;
+        history.push(detailPath)
+      }
+
+      goBack(){
+        let submissionPath = '/forecast/' + this.state.city;
+        history.push(submissionPath)
+      }
+
 
       render() {
 
-      const Home = (props) => {
+        const Home = (props) => {
           return (
             <div>
               <WeatherNav
@@ -172,33 +217,51 @@ class WeatherNav extends Component {
                   weather={this.state.weather}
                   city={this.state.city}
                   loading={this.state.loading}
+                  detail={this.state.detail}
+                  viewDayDetail={this.viewDayDetail.bind(this)}
                 />}
               </div>
 
             );
           }
 
-          return (
-
-            <div>
-              <Router history={history}>
-                <div>
-
-                  <Switch>
-                    <Route exact path='/' render={Home} />
-                    <Route path='/forecast/:city' render={Forecast} />
-                    <Route render={function () {
-                      return <p>Not Found</p>
-                    }} />
-                  </Switch>
+          const DayRender = (props) => {
+            return (
+              <div>
+                <WeatherNav
+                  submitNewCity={this.submitNewCity.bind(this)}
+                  onChange={this.onChange.bind(this)}
+                  city={this.state.city}
+                />
+                <DayDetail weather={this.state.weather}
+                  detailIndex={this.state.detailIndex}
+                  goBack={this.goBack}/>
                 </div>
-              </Router>
+              )
+            }
 
-            </div>
+            return (
+
+              <div>
+                <Router history={history}>
+                  <div>
+
+                    <Switch>
+                      <Route exact path='/' render={Home} />
+                      <Route path='/forecast/:city' render={Forecast} />
+                      <Route path='/detail/:city' render={DayRender} />
+                      <Route render={function () {
+                        return <p>Not Found</p>
+                      }} />
+                    </Switch>
+                  </div>
+                </Router>
+
+              </div>
 
 
-          )
+            )
+          }
         }
-      }
 
-      export default App;
+        export default App;
