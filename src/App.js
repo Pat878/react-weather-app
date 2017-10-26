@@ -6,7 +6,7 @@ from 'react-bootstrap';
 import { Router, Route, Link, Switch } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 
-const history = createBrowserHistory()
+var history = createBrowserHistory()
 
 var axios = require('axios');
 var Loading = require('./Loading');
@@ -79,7 +79,7 @@ class WeatherNav extends Component {
 
           return (
             <div key={index} onClick={this.props.viewDayDetail.bind(this,index)}>
-              <div><img key={key * 2} alt="weather_icon" src={"http://openweathermap.org/img/w/" +
+              <div><img alt="weather_icon" src={"http://openweathermap.org/img/w/" +
               imageIcon[key][0].icon + ".png"}/></div>
               <div><h3>{dates[key]}</h3></div>
             </div>
@@ -91,7 +91,7 @@ class WeatherNav extends Component {
             <center>
               <h1>{this.props.weather.city.name}</h1>
               <div>
-                {this.props.detail ? <DayDetail/> : mappedWeatherObject }
+                {mappedWeatherObject}
               </div>
             </center>
 
@@ -103,15 +103,16 @@ class WeatherNav extends Component {
     class DayDetail extends Component {
 
       render (){
+        let props = this.props.weather
         let options = { weekday: 'long', month: 'long', day: 'numeric' };
         let index = this.props.detailIndex;
-        let date = new Date(this.props.weather.list[index].dt * 1000).toLocaleDateString('en-US', options)
-        let icon = this.props.weather.list[index].weather[0].icon
-        let city = this.props.weather.city.name
-        let description = this.props.weather.list[index].weather[0].description
-        let minTemp = Math.round(this.props.weather.list[index].temp.min * 9/5 - 459.67)
-        let maxTemp = Math.round(this.props.weather.list[index].temp.max * 9/5 - 459.67)
-        let humidity = this.props.weather.list[index].humidity
+        let date = new Date(props.list[index].dt * 1000).toLocaleDateString('en-US', options)
+        let icon = props.list[index].weather[0].icon
+        let city = props.city.name
+        let description = props.list[index].weather[0].description
+        let minTemp = Math.round(props.list[index].temp.min * 9/5 - 459.67)
+        let maxTemp = Math.round(props.list[index].temp.max * 9/5 - 459.67)
+        let humidity = props.list[index].humidity
 
         return (
           <div>
@@ -122,7 +123,7 @@ class WeatherNav extends Component {
               <h2>{city}</h2>
               <h3>{description}</h3>
               <h3>Min Temp: {minTemp} degrees</h3>
-              <h3>Max Temp: {Math.round(maxTemp)} degrees</h3>
+              <h3>Max Temp: {maxTemp} degrees</h3>
               <h3>Humidity: {humidity}</h3>
               <Button onClick={this.props.goBack}>Back</Button>
             </center>
@@ -139,7 +140,6 @@ class WeatherNav extends Component {
           city: "",
           weather: [],
           loading: true,
-          detail: false,
           detailIndex: null
         }
         this.onChange = this.onChange.bind(this);
@@ -159,7 +159,6 @@ class WeatherNav extends Component {
           this.setState({weather: res.data, loading:false});
 
         });
-        console.log("call")
       }
 
       submitNewCity (e) {
@@ -217,7 +216,6 @@ class WeatherNav extends Component {
                   weather={this.state.weather}
                   city={this.state.city}
                   loading={this.state.loading}
-                  detail={this.state.detail}
                   viewDayDetail={this.viewDayDetail.bind(this)}
                 />}
               </div>
