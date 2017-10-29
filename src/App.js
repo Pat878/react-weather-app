@@ -245,7 +245,7 @@ class WeatherNav extends Component {
                   <div>
 
                     <Switch>
-                      <Route exact path='/' render={Home} />
+                      <Route exact path='/home' render={Home} />
                       <Route path='/forecast/:city' render={Forecast} />
                       <Route path='/detail/:city' render={DayRender} />
                       <Route render={function () {
