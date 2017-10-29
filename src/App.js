@@ -18,7 +18,7 @@ class WeatherNav extends Component {
         <Navbar inverse>
           <Navbar.Header>
             <Navbar.Brand>
-              <Link to="/">Weather App</Link>
+              <Link to={process.env.PUBLIC_URL + '/'}>Weather App</Link>
             </Navbar.Brand>
           </Navbar.Header>
 
