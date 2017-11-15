@@ -6,7 +6,7 @@ from 'react-bootstrap';
 import { Router, Route, Link, Switch } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 
-var history = createBrowserHistory()
+var history = createBrowserHistory();
 
 var axios = require('axios');
 var Loading = require('./Loading');
@@ -57,6 +57,8 @@ class WeatherNav extends Component {
                   </Button>
                 </FormGroup>
               </Form>
+              <p>*OpenWeatherMap made some changes to their API recently,
+                so please only enter the city name for now until I update the app. </p>
             </center>
           </div>
         )
