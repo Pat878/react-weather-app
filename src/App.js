@@ -24,7 +24,7 @@ class WeatherNav extends Component {
 
           <Navbar.Form pullRight>
             <FormGroup>
-              <FormControl type="text" placeholder="Lancaster, PA"
+              <FormControl type="text" placeholder="New York"
                 onChange={this.props.onChange}/>
               </FormGroup>
               {' '}
@@ -42,12 +42,12 @@ class WeatherNav extends Component {
       return (
         <div className="weather">
           <center>
-            <div id="title">Enter a City and a State</div><br/>
+            <div id="title">Enter a City</div><br/>
 
             <Form horizontal>
               <FormGroup controlId="formHorizontalLocation">
                 <Col smOffset={5} sm={2}>
-                  <FormControl type="location" placeholder="Lancaster, PA"
+                  <FormControl type="location" placeholder="New York"
                     onChange={this.props.onChange}/>
                   </Col>
                 </FormGroup>
@@ -57,8 +57,6 @@ class WeatherNav extends Component {
                   </Button>
                 </FormGroup>
               </Form>
-              <p>*OpenWeatherMap made some changes to their API recently,
-                so please only enter the city name for now until I update the app. </p>
             </center>
           </div>
         )
