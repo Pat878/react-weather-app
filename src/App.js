@@ -17,6 +17,135 @@ var history = createBrowserHistory();
 var axios = require("axios");
 var Loading = require("./Loading");
 
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      city: "",
+      weather: [],
+      loading: true,
+      detailIndex: null
+    };
+    this.onChange = this.onChange.bind(this);
+    this.submitNewCity = this.submitNewCity.bind(this);
+    this.goBack = this.goBack.bind(this);
+  }
+
+  onChange(e) {
+    this.setState({ city: e.target.value });
+  }
+
+  ajaxCall() {
+    axios
+      .get(
+        "http://api.openweathermap.org/data/2.5/forecast/daily?q=" +
+          this.state.city +
+          "&type=accurate&APPID=f1455e6d29208b068f597ec226e62ffa&cnt=5"
+      )
+      .then(res => {
+        this.setState({ weather: res.data, loading: false });
+      });
+  }
+
+  submitNewCity(e) {
+    this.ajaxCall();
+    this.setState({ loading: true });
+    let submissionPath = "/forecast/" + this.state.city;
+    history.push(submissionPath);
+
+    e.preventDefault();
+  }
+
+  viewDayDetail(index, e) {
+    this.setState({ detailIndex: index });
+    let detailPath = "/detail/" + this.state.city;
+    history.push(detailPath);
+  }
+
+  goBack() {
+    let submissionPath = "/forecast/" + this.state.city;
+    history.push(submissionPath);
+  }
+
+  render() {
+    const Home = props => {
+      return (
+        <div>
+          <WeatherNav
+            submitNewCity={this.submitNewCity.bind(this)}
+            onChange={this.onChange.bind(this)}
+            city={this.state.city}
+          />
+
+          <Input
+            submitNewCity={this.submitNewCity.bind(this)}
+            onChange={this.onChange.bind(this)}
+            city={this.state.city}
+          />
+        </div>
+      );
+    };
+
+    const Forecast = props => {
+      return (
+        <div>
+          <WeatherNav
+            submitNewCity={this.submitNewCity.bind(this)}
+            onChange={this.onChange.bind(this)}
+            city={this.state.city}
+          />
+          {this.state.loading ? (
+            <Loading />
+          ) : (
+            <FiveDayForecast
+              weather={this.state.weather}
+              city={this.state.city}
+              loading={this.state.loading}
+              viewDayDetail={this.viewDayDetail.bind(this)}
+            />
+          )}
+        </div>
+      );
+    };
+
+    const DayRender = props => {
+      return (
+        <div>
+          <WeatherNav
+            submitNewCity={this.submitNewCity.bind(this)}
+            onChange={this.onChange.bind(this)}
+            city={this.state.city}
+          />
+          <DayDetail
+            weather={this.state.weather}
+            detailIndex={this.state.detailIndex}
+            goBack={this.goBack}
+          />
+        </div>
+      );
+    };
+
+    return (
+      <div>
+        <Router history={history}>
+          <div>
+            <Switch>
+              <Route exact path={process.env.PUBLIC_URL + "/"} render={Home} />
+              <Route path="/forecast/:city" render={Forecast} />
+              <Route path="/detail/:city" render={DayRender} />
+              <Route
+                render={function() {
+                  return <p>Not Found</p>;
+                }}
+              />
+            </Switch>
+          </div>
+        </Router>
+      </div>
+    );
+  }
+}
+
 class WeatherNav extends Component {
   render() {
     return (
@@ -154,135 +283,6 @@ class DayDetail extends Component {
           <h3>Humidity: {humidity}</h3>
           <Button onClick={this.props.goBack}>Back</Button>
         </center>
-      </div>
-    );
-  }
-}
-
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      city: "",
-      weather: [],
-      loading: true,
-      detailIndex: null
-    };
-    this.onChange = this.onChange.bind(this);
-    this.submitNewCity = this.submitNewCity.bind(this);
-    this.goBack = this.goBack.bind(this);
-  }
-
-  onChange(e) {
-    this.setState({ city: e.target.value });
-  }
-
-  ajaxCall() {
-    axios
-      .get(
-        "http://api.openweathermap.org/data/2.5/forecast/daily?q=" +
-          this.state.city +
-          "&type=accurate&APPID=f1455e6d29208b068f597ec226e62ffa&cnt=5"
-      )
-      .then(res => {
-        this.setState({ weather: res.data, loading: false });
-      });
-  }
-
-  submitNewCity(e) {
-    this.ajaxCall();
-    this.setState({ loading: true });
-    let submissionPath = "/forecast/" + this.state.city;
-    history.push(submissionPath);
-
-    e.preventDefault();
-  }
-
-  viewDayDetail(index, e) {
-    this.setState({ detailIndex: index });
-    let detailPath = "/detail/" + this.state.city;
-    history.push(detailPath);
-  }
-
-  goBack() {
-    let submissionPath = "/forecast/" + this.state.city;
-    history.push(submissionPath);
-  }
-
-  render() {
-    const Home = props => {
-      return (
-        <div>
-          <WeatherNav
-            submitNewCity={this.submitNewCity.bind(this)}
-            onChange={this.onChange.bind(this)}
-            city={this.state.city}
-          />
-
-          <Input
-            submitNewCity={this.submitNewCity.bind(this)}
-            onChange={this.onChange.bind(this)}
-            city={this.state.city}
-          />
-        </div>
-      );
-    };
-
-    const Forecast = props => {
-      return (
-        <div>
-          <WeatherNav
-            submitNewCity={this.submitNewCity.bind(this)}
-            onChange={this.onChange.bind(this)}
-            city={this.state.city}
-          />
-          {this.state.loading ? (
-            <Loading />
-          ) : (
-            <FiveDayForecast
-              weather={this.state.weather}
-              city={this.state.city}
-              loading={this.state.loading}
-              viewDayDetail={this.viewDayDetail.bind(this)}
-            />
-          )}
-        </div>
-      );
-    };
-
-    const DayRender = props => {
-      return (
-        <div>
-          <WeatherNav
-            submitNewCity={this.submitNewCity.bind(this)}
-            onChange={this.onChange.bind(this)}
-            city={this.state.city}
-          />
-          <DayDetail
-            weather={this.state.weather}
-            detailIndex={this.state.detailIndex}
-            goBack={this.goBack}
-          />
-        </div>
-      );
-    };
-
-    return (
-      <div>
-        <Router history={history}>
-          <div>
-            <Switch>
-              <Route exact path={process.env.PUBLIC_URL + "/"} render={Home} />
-              <Route path="/forecast/:city" render={Forecast} />
-              <Route path="/detail/:city" render={DayRender} />
-              <Route
-                render={function() {
-                  return <p>Not Found</p>;
-                }}
-              />
-            </Switch>
-          </div>
-        </Router>
       </div>
     );
   }
