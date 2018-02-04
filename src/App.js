@@ -18,24 +18,18 @@ var axios = require("axios");
 var Loading = require("./Loading");
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      city: "",
-      weather: [],
-      loading: true,
-      detailIndex: null
-    };
-    this.onChange = this.onChange.bind(this);
-    this.submitNewCity = this.submitNewCity.bind(this);
-    this.goBack = this.goBack.bind(this);
-  }
+  state = {
+    city: "",
+    weather: [],
+    loading: true,
+    detailIndex: null
+  };
 
-  onChange(e) {
+  onChange = e => {
     this.setState({ city: e.target.value });
-  }
+  };
 
-  ajaxCall() {
+  ajaxCall = () => {
     axios
       .get(
         "http://api.openweathermap.org/data/2.5/forecast/daily?q=" +
@@ -45,27 +39,27 @@ class App extends Component {
       .then(res => {
         this.setState({ weather: res.data, loading: false });
       });
-  }
+  };
 
-  submitNewCity(e) {
+  submitNewCity = e => {
     this.ajaxCall();
     this.setState({ loading: true });
     let submissionPath = "/forecast/" + this.state.city;
     history.push(submissionPath);
 
     e.preventDefault();
-  }
+  };
 
-  viewDayDetail(index, e) {
+  viewDayDetail = (index, e) => {
     this.setState({ detailIndex: index });
     let detailPath = "/detail/" + this.state.city;
     history.push(detailPath);
-  }
+  };
 
-  goBack() {
+  goBack = () => {
     let submissionPath = "/forecast/" + this.state.city;
     history.push(submissionPath);
-  }
+  };
 
   render() {
     const Home = props => {
