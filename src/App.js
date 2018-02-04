@@ -140,146 +140,138 @@ class App extends Component {
   }
 }
 
-class WeatherNav extends Component {
-  render() {
-    return (
-      <div>
-        <Navbar inverse>
-          <Navbar.Header>
-            <Navbar.Brand>
-              <Link to={process.env.PUBLIC_URL + "/"}>Weather App</Link>
-            </Navbar.Brand>
-          </Navbar.Header>
+const WeatherNav = props => {
+  return (
+    <div>
+      <Navbar inverse>
+        <Navbar.Header>
+          <Navbar.Brand>
+            <Link to={process.env.PUBLIC_URL + "/"}>Weather App</Link>
+          </Navbar.Brand>
+        </Navbar.Header>
 
-          <Navbar.Form pullRight>
-            <FormGroup>
+        <Navbar.Form pullRight>
+          <FormGroup>
+            <FormControl
+              type="text"
+              placeholder="New York"
+              onChange={props.onChange}
+            />
+          </FormGroup>{" "}
+          <Button onClick={props.submitNewCity}>Get Weather</Button>
+        </Navbar.Form>
+      </Navbar>
+    </div>
+  );
+};
+
+const Input = props => {
+  return (
+    <div className="weather">
+      <center>
+        <div id="title">Enter a City</div>
+        <br />
+
+        <Form horizontal>
+          <FormGroup controlId="formHorizontalLocation">
+            <Col smOffset={5} sm={2}>
               <FormControl
-                type="text"
+                type="location"
                 placeholder="New York"
-                onChange={this.props.onChange}
+                onChange={props.onChange}
               />
-            </FormGroup>{" "}
-            <Button onClick={this.props.submitNewCity}>Get Weather</Button>
-          </Navbar.Form>
-        </Navbar>
-      </div>
-    );
-  }
-}
+            </Col>
+          </FormGroup>
+          <FormGroup>
+            <Button onClick={props.submitNewCity}>Get Weather</Button>
+          </FormGroup>
+        </Form>
+      </center>
+    </div>
+  );
+};
 
-class Input extends Component {
-  render() {
+const FiveDayForecast = props => {
+  const weatherObject = props.weather.list;
+  const dates = [];
+  const imageIcon = [];
+
+  const mappedWeatherObject = Object.keys(weatherObject).map((key, index) => {
+    let options = { weekday: "long", month: "long", day: "numeric" };
+
+    dates.push(
+      new Date(weatherObject[index].dt * 1000).toLocaleDateString(
+        "en-US",
+        options
+      )
+    );
+    imageIcon.push(weatherObject[index].weather);
+
     return (
-      <div className="weather">
-        <center>
-          <div id="title">Enter a City</div>
-          <br />
-
-          <Form horizontal>
-            <FormGroup controlId="formHorizontalLocation">
-              <Col smOffset={5} sm={2}>
-                <FormControl
-                  type="location"
-                  placeholder="New York"
-                  onChange={this.props.onChange}
-                />
-              </Col>
-            </FormGroup>
-            <FormGroup>
-              <Button onClick={this.props.submitNewCity}>Get Weather</Button>
-            </FormGroup>
-          </Form>
-        </center>
+      <div key={index} onClick={props.viewDayDetail.bind(this, index)}>
+        <div>
+          <img
+            alt="weather_icon"
+            src={
+              "http://openweathermap.org/img/w/" +
+              imageIcon[key][0].icon +
+              ".png"
+            }
+          />
+        </div>
+        <div>
+          <h3>{dates[key]}</h3>
+        </div>
       </div>
     );
-  }
-}
+  });
 
-class FiveDayForecast extends Component {
-  render() {
-    const weatherObject = this.props.weather.list;
-    const dates = [];
-    const imageIcon = [];
+  return (
+    <div>
+      <center>
+        <h1>{props.weather.city.name}</h1>
+        <div>{mappedWeatherObject}</div>
+      </center>
+    </div>
+  );
+};
 
-    const mappedWeatherObject = Object.keys(weatherObject).map((key, index) => {
-      let options = { weekday: "long", month: "long", day: "numeric" };
+const DayDetail = props => {
+  let weatherProps = props.weather;
+  let options = { weekday: "long", month: "long", day: "numeric" };
+  let index = props.detailIndex;
+  let date = new Date(weatherProps.list[index].dt * 1000).toLocaleDateString(
+    "en-US",
+    options
+  );
+  let icon = weatherProps.list[index].weather[0].icon;
+  let city = weatherProps.city.name;
+  let description = weatherProps.list[index].weather[0].description;
+  let minTemp = Math.round(weatherProps.list[index].temp.min * 9 / 5 - 459.67);
+  let maxTemp = Math.round(weatherProps.list[index].temp.max * 9 / 5 - 459.67);
+  let humidity = weatherProps.list[index].humidity;
 
-      dates.push(
-        new Date(weatherObject[index].dt * 1000).toLocaleDateString(
-          "en-US",
-          options
-        )
-      );
-      imageIcon.push(weatherObject[index].weather);
-
-      return (
-        <div key={index} onClick={this.props.viewDayDetail.bind(this, index)}>
-          <div>
+  return (
+    <div>
+      <center>
+        <div>
+          {
             <img
               alt="weather_icon"
-              src={
-                "http://openweathermap.org/img/w/" +
-                imageIcon[key][0].icon +
-                ".png"
-              }
+              src={"http://openweathermap.org/img/w/" + icon + ".png"}
             />
-          </div>
-          <div>
-            <h3>{dates[key]}</h3>
-          </div>
+          }
         </div>
-      );
-    });
-
-    return (
-      <div>
-        <center>
-          <h1>{this.props.weather.city.name}</h1>
-          <div>{mappedWeatherObject}</div>
-        </center>
-      </div>
-    );
-  }
-}
-
-class DayDetail extends Component {
-  render() {
-    let props = this.props.weather;
-    let options = { weekday: "long", month: "long", day: "numeric" };
-    let index = this.props.detailIndex;
-    let date = new Date(props.list[index].dt * 1000).toLocaleDateString(
-      "en-US",
-      options
-    );
-    let icon = props.list[index].weather[0].icon;
-    let city = props.city.name;
-    let description = props.list[index].weather[0].description;
-    let minTemp = Math.round(props.list[index].temp.min * 9 / 5 - 459.67);
-    let maxTemp = Math.round(props.list[index].temp.max * 9 / 5 - 459.67);
-    let humidity = props.list[index].humidity;
-
-    return (
-      <div>
-        <center>
-          <div>
-            {
-              <img
-                alt="weather_icon"
-                src={"http://openweathermap.org/img/w/" + icon + ".png"}
-              />
-            }
-          </div>
-          <h2>{date}</h2>
-          <h2>{city}</h2>
-          <h3>{description}</h3>
-          <h3>Min Temp: {minTemp} degrees</h3>
-          <h3>Max Temp: {maxTemp} degrees</h3>
-          <h3>Humidity: {humidity}</h3>
-          <Button onClick={this.props.goBack}>Back</Button>
-        </center>
-      </div>
-    );
-  }
-}
+        <h2>{date}</h2>
+        <h2>{city}</h2>
+        <h3>{description}</h3>
+        <h3>Min Temp: {minTemp} degrees</h3>
+        <h3>Max Temp: {maxTemp} degrees</h3>
+        <h3>Humidity: {humidity}</h3>
+        <Button onClick={props.goBack}>Back</Button>
+      </center>
+    </div>
+  );
+};
 
 export default App;
