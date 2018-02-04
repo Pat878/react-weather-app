@@ -16,6 +16,7 @@ var history = createBrowserHistory();
 
 var axios = require("axios");
 var Loading = require("./Loading");
+var WeatherNav = require("./components/WeatherNav")
 
 class App extends Component {
   state = {
@@ -140,30 +141,7 @@ class App extends Component {
   }
 }
 
-const WeatherNav = props => {
-  return (
-    <div>
-      <Navbar inverse>
-        <Navbar.Header>
-          <Navbar.Brand>
-            <Link to={process.env.PUBLIC_URL + "/"}>Weather App</Link>
-          </Navbar.Brand>
-        </Navbar.Header>
 
-        <Navbar.Form pullRight>
-          <FormGroup>
-            <FormControl
-              type="text"
-              placeholder="New York"
-              onChange={props.onChange}
-            />
-          </FormGroup>{" "}
-          <Button onClick={props.submitNewCity}>Get Weather</Button>
-        </Navbar.Form>
-      </Navbar>
-    </div>
-  );
-};
 
 const Input = props => {
   return (
