@@ -16,7 +16,8 @@ var history = createBrowserHistory();
 
 var axios = require("axios");
 var Loading = require("./Loading");
-var WeatherNav = require("./components/WeatherNav")
+var WeatherNav = require("./components/WeatherNav");
+var Input = require("./components/Input");
 
 class App extends Component {
   state = {
@@ -140,34 +141,6 @@ class App extends Component {
     );
   }
 }
-
-
-
-const Input = props => {
-  return (
-    <div className="weather">
-      <center>
-        <div id="title">Enter a City</div>
-        <br />
-
-        <Form horizontal>
-          <FormGroup controlId="formHorizontalLocation">
-            <Col smOffset={5} sm={2}>
-              <FormControl
-                type="location"
-                placeholder="New York"
-                onChange={props.onChange}
-              />
-            </Col>
-          </FormGroup>
-          <FormGroup>
-            <Button onClick={props.submitNewCity}>Get Weather</Button>
-          </FormGroup>
-        </Form>
-      </center>
-    </div>
-  );
-};
 
 const FiveDayForecast = props => {
   const weatherObject = props.weather.list;
