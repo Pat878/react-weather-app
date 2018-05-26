@@ -13,8 +13,8 @@ import { Router, Route, Link, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
 
 var history = createBrowserHistory();
-
 var axios = require("axios");
+
 var Loading = require("./Loading");
 var WeatherNav = require("./components/WeatherNav");
 var Input = require("./components/Input");
@@ -66,24 +66,6 @@ class App extends Component {
   };
 
   render() {
-    const Home = props => {
-      return (
-        <div>
-          <WeatherNav
-            submitNewCity={this.submitNewCity.bind(this)}
-            onChange={this.onChange.bind(this)}
-            city={this.state.city}
-          />
-
-          <Input
-            submitNewCity={this.submitNewCity.bind(this)}
-            onChange={this.onChange.bind(this)}
-            city={this.state.city}
-          />
-        </div>
-      );
-    };
-
     const Forecast = props => {
       return (
         <div>
@@ -128,8 +110,47 @@ class App extends Component {
         <Router history={history}>
           <div>
             <Switch>
-              <Route exact path={process.env.PUBLIC_URL + "/"} render={Home} />
-              <Route path="/forecast/:city" render={Forecast} />
+              <Route
+                exact
+                path={process.env.PUBLIC_URL + "/"}
+                render={props => (
+                  <div>
+                    <WeatherNav
+                      submitNewCity={this.submitNewCity.bind(this)}
+                      onChange={this.onChange.bind(this)}
+                      city={this.state.city}
+                    />
+
+                    <Input
+                      submitNewCity={this.submitNewCity.bind(this)}
+                      onChange={this.onChange.bind(this)}
+                      city={this.state.city}
+                    />
+                  </div>
+                )}
+              />
+              <Route
+                path="/forecast/:city"
+                render={props => (
+                  <div>
+                    <WeatherNav
+                      submitNewCity={this.submitNewCity.bind(this)}
+                      onChange={this.onChange.bind(this)}
+                      city={this.state.city}
+                    />
+                    {this.state.loading ? (
+                      <Loading />
+                    ) : (
+                      <FiveDayForecast
+                        weather={this.state.weather}
+                        city={this.state.city}
+                        loading={this.state.loading}
+                        viewDayDetail={this.viewDayDetail.bind(this)}
+                      />
+                    )}
+                  </div>
+                )}
+              />
               <Route path="/detail/:city" render={DayRender} />
               <Route
                 render={function() {
