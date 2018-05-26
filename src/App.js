@@ -66,45 +66,6 @@ class App extends Component {
   };
 
   render() {
-    const Forecast = props => {
-      return (
-        <div>
-          <WeatherNav
-            submitNewCity={this.submitNewCity.bind(this)}
-            onChange={this.onChange.bind(this)}
-            city={this.state.city}
-          />
-          {this.state.loading ? (
-            <Loading />
-          ) : (
-            <FiveDayForecast
-              weather={this.state.weather}
-              city={this.state.city}
-              loading={this.state.loading}
-              viewDayDetail={this.viewDayDetail.bind(this)}
-            />
-          )}
-        </div>
-      );
-    };
-
-    const DayRender = props => {
-      return (
-        <div>
-          <WeatherNav
-            submitNewCity={this.submitNewCity.bind(this)}
-            onChange={this.onChange.bind(this)}
-            city={this.state.city}
-          />
-          <DayDetail
-            weather={this.state.weather}
-            detailIndex={this.state.detailIndex}
-            goBack={this.goBack}
-          />
-        </div>
-      );
-    };
-
     return (
       <div>
         <Router history={history}>
@@ -151,7 +112,23 @@ class App extends Component {
                   </div>
                 )}
               />
-              <Route path="/detail/:city" render={DayRender} />
+              <Route
+                path="/detail/:city"
+                render={props => (
+                  <div>
+                    <WeatherNav
+                      submitNewCity={this.submitNewCity.bind(this)}
+                      onChange={this.onChange.bind(this)}
+                      city={this.state.city}
+                    />
+                    <DayDetail
+                      weather={this.state.weather}
+                      detailIndex={this.state.detailIndex}
+                      goBack={this.goBack}
+                    />
+                  </div>
+                )}
+              />
               <Route
                 render={function() {
                   return <p>Not Found</p>;
